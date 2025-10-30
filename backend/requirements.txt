@@ -1,0 +1,38 @@
+# Core
+streamlit
+pandas
+plotly
+
+# Elasticsearch client
+elasticsearch==8.9.0
+
+# RAG + LLM
+langchain
+langchain-community
+langchain-core
+chromadb
+
+# HuggingFace
+transformers
+accelerate
+torch
+numpy
+
+pynput
+pyperclip
+psutil
+uiautomation
+pillow  
+pystray
+  
+BeautifulSoup4
+
+uvicorn
+fastapi
+
+passlib[bcrypt] 
+python-jose[cryptography] 
+pydantic[email]
+
+fastapi-mail==1.5.0
+elasticsearch[async]

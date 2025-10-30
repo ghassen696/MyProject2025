@@ -1,0 +1,13 @@
+{
+  "date": "2025-10-21-part1",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Employee spent most of the day switching between different apps and tasks, with a focus on automation/scripting and development/coding.",
+  "activities": {
+    "Automation / Scripting": ["Spent time idle in LockApp, then returned from idle, typed some characters, switched to explorer, and used the 'Switch App' shortcut", "Used the 'Switch App' shortcut multiple times"],
+    "Development / Coding": ["Typed many periods, used the 'Pasted content' feature several times, worked on preprocessing.py, and maintained a long conversation with curl"]
+  },
+  "insights": [
+    "Employee had difficulty focusing on a single task due to frequent app switching",
+    "Type of tasks completed were mostly related to automation/scripting, suggesting that they may be routine or repetitive"
+  ]
+}

@@ -1,0 +1,12 @@
+ELASTICSEARCH_URL = "http://localhost:9200"
+SECRET_KEY = "rveriveivjevsupersecretkey12ded"  # use env variable in production
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+SMTP_USERNAME = "huaweitesttest1@gmail.com"
+SMTP_PASSWORD = "ordf ylso cjkm koiq"  # generate from Google account
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SMTP_FROM = "Huawei Test <huaweitesttest1@gmail.com>"
+FRONTEND_URL = "http://localhost:5173"
+INDEX_KPI = "employee_kpi_daily_v3"
+INDEX_KPIBATCH = "employee_kpi_summary4"
