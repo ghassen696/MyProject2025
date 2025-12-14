@@ -1,0 +1,10 @@
+{
+  "date": "2025-11-22-part1",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee successfully created a RAG chatbot for Huawei cloud documentation and designed various logo options.",
+  "activities": {
+    "Development / Coding": ["typed: 'RAG' - [00:00:23] Pasted content: I'll walk you through our Retrieval-Augmented Generation pipeline — or RAG system — that we've built . every answer can be properly cited back to its source. Let me now zoom into each phase in detail.", "typed: 'gemini' - [00:16:19] typed: 'i made a rag chatbot for huawei cloud deocumentation so can you gnerate a logio or an image for that'", "typed: 'chatbot assistant' - [00:20:02] typed: 'more like a logo'"],
+    "Idle / Break": ["Went idle in chrome (Proposal - Présentation - Google Chrome) - [00:26:44] Returned from idle (away 1m 46s)", "Went idle in chrome (Proposal - Présentation - Google Chrome) - [00:29:30] Returned from idle (away 30s)", "Went idle in chrome (Proposal - Présentation - Google Chrome) - [00:31:38] Returned from idle (away 0s)", "Went idle in chrome (Proposal - Présentation - Google Chrome) - [00:32:05] Returned from idle (away 3s)", "Went idle in chrome (Proposal - Présentation - Google Chrome) - [00:33:52] Returned from idle (away 1s)"]
+  },
+  "insights": ["The employee spent a significant amount of time designing logo options for the RAG chatbot.", "The employee used various shortcuts to navigate between different applications and files.", "The employee took multiple breaks during the session, indicating potential need for more focused work sessions."]
+}

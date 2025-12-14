@@ -21,7 +21,7 @@ async def get_productivity(
 ):
     # If no date provided, use yesterday by default
     if not date:
-        yesterday = datetime.utcnow() - timedelta(days=8)
+        yesterday = datetime.utcnow() - timedelta(days=108)
         date = yesterday.strftime("%Y-%m-%d")
 
     # If both employee_id and date provided, get single document
@@ -87,6 +87,19 @@ async def get_productivity_rollup(
 
     return rollup_productivity(docs)
 
+@router.get("/employees/", response_model=List[str])
+async def get_all_employee_ids():
+    query = {
+        "size": 0,
+        "aggs": {
+            "unique_ids": {
+                "terms": {"field": "employee_id.keyword", "size": 10000}
+            }
+        }
+    }
+
+    resp = await es.search(index=INDEX_KPIBATCH, body=query)
+    return [bucket["key"] for bucket in resp["aggregations"]["unique_ids"]["buckets"]]
 
 """dzd"""
 """from statistics import mean

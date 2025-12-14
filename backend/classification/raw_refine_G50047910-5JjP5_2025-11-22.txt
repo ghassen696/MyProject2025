@@ -1,0 +1,32 @@
+{
+  "date": "2025-11-22",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee spent a significant amount of time designing logo options for the RAG chatbot, creating multiple iterations using Canva. They also worked on various tasks related to the project, including creating a RAG chatbot for Huawei cloud documentation and implementing Rawbatch.py with .v file.",
+  "activities": {
+    "Development / Coding": [
+      "Created a RAG chatbot for Huawei cloud documentation",
+      "Implemented Rawbatch.py with .v file"
+    ],
+    "Idle / Break": [
+      "Returned from idle (away 7s)",
+      "Went idle in chrome (Proposal - Présentation - Google Chrome) - [00:26:44] Returned from idle (away 1m 46s)"
+    ],
+    "Browsing / Distraction": [
+      "artificl inteligencepipeline template for presentation - Google Search",
+      "YouTube - Google Chrome"
+    ],
+    "System Maintenance / Troubleshooting": [
+      "Returned from idle (away 11m 11s)",
+      "Switched to chrome (RAG pipeline architecture visualization - Claude - Google Chrome)"
+    ],
+    "Research / Learning": [
+      "Switched to chrome (Real-time KPI aggregation - Google Chrome)",
+      "check her here in my code im i doing something wrong so to builf th . employe history i do take 3make a vector embediing of 30%summary 70%summary and mix them"
+    ]
+  },
+  "insights": [
+    "The employee took multiple breaks during the session, indicating potential need for more focused work sessions.",
+    "The employee spent a significant amount of time designing logo options for the RAG chatbot.",
+    "The employee used Canva animation in their pipeline design."
+  ]
+}

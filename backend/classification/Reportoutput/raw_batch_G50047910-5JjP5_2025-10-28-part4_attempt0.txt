@@ -1,0 +1,25 @@
+{
+  "date": "2025-10-28-part4",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Built employee history with embedding model using Python.",
+  "activities": {
+    "Development / Coding": [
+      "Switched to Cursor (realtimekpi3.py - AIProject [SSH: 193.95.30.190] - Cursor)",
+      "Switched to Code (Home.tsx - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "Switched to Code (IdleTimeAnalysis.tsx - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)"
+    ],
+    "Development / Coding": [
+      "Switched to Cursor (realtimekpi3.py - AIProject [SSH: 193.95.30.190] - Cursor)",
+      "Switched to Code (IdleTimeAnalysis.tsx - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)"
+    ],
+    "Development / Coding": [
+      "Switched to Code (Home.tsx - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "Switched to Code (IdleTimeAnalysis.tsx - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)"
+    ]
+  },
+  "insights": [
+    "The employee spent most of the time working on the code.",
+    "There were frequent switching between different files and tools.",
+    "The employee used a specific model (text-embedding-3-small) for embedding"
+  ]
+}

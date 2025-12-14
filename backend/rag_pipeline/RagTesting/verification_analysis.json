@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-11-06T14:31:38.264439",
+  "total_responses": 40,
+  "models_evaluated": [
+    "llama3.2:1b",
+    "llama3.2:3b",
+    "llama3.2:latest",
+    "phi3:mini",
+    "gemma2:2b"
+  ],
+  "average_scores": {
+    "accuracy": 4.175,
+    "completeness": 4.125,
+    "relevance": 3.95,
+    "citation_quality": 3.825,
+    "clarity": 4.925,
+    "overall": 4.075
+  },
+  "by_model": {
+    "llama3.2:1b": {
+      "count": 8,
+      "avg_overall_rating": 3.75,
+      "avg_accuracy": 3.75,
+      "avg_inference_time": 37.156125,
+      "hallucination_count": 1,
+      "keyword_match_avg": 81.25
+    },
+    "llama3.2:3b": {
+      "count": 8,
+      "avg_overall_rating": 4.0,
+      "avg_accuracy": 4.125,
+      "avg_inference_time": 38.15175,
+      "hallucination_count": 0,
+      "keyword_match_avg": 68.75
+    },
+    "llama3.2:latest": {
+      "count": 8,
+      "avg_overall_rating": 4.25,
+      "avg_accuracy": 4.5,
+      "avg_inference_time": 34.442375,
+      "hallucination_count": 0,
+      "keyword_match_avg": 71.875
+    },
+    "phi3:mini": {
+      "count": 8,
+      "avg_overall_rating": 4.5,
+      "avg_accuracy": 4.5,
+      "avg_inference_time": 75.976625,
+      "hallucination_count": 0,
+      "keyword_match_avg": 71.875
+    },
+    "gemma2:2b": {
+      "count": 8,
+      "avg_overall_rating": 3.875,
+      "avg_accuracy": 4.0,
+      "avg_inference_time": 33.8975,
+      "hallucination_count": 0,
+      "keyword_match_avg": 75.0
+    }
+  }
+}

@@ -39,7 +39,7 @@ def parse_json_response(resp_text: str) -> dict:
 # -------------------------
 def classify_activity(chunk: Dict[str, Any], retries: int = MAX_RETRIES, temperature: float = TEMPERATURE) -> Dict[str, Any]:
     """Classify a chunk of logs into a semantic activity category using Ollama."""
-    
+    start = time.time()  # start timer
     text = chunk.get("summary_text", "")
     dominant_event = chunk.get("meta", {}).get("dominant_event", "unknown")
     event_count = chunk.get("meta", {}).get("original_event_count", 0)
@@ -53,15 +53,6 @@ You are an AI assistant specialized in analyzing summarized logs of cloud engine
 Your task is to classify the dominant activity category for the following time window. 
 Consider the summary of actions, the dominant window/application, and metadata like event counts and duration.
 
-Metadata:
-- Dominant event: {dominant_event}
-- Event count: {event_count}
-- Window/application: {window}
-- Chunk duration: from {start_time} to {end_time}
-- Quality score: {chunk.get('meta', {}).get('quality', {}).get('quality_score', 'unknown')}
-- Unique apps: {chunk.get('meta', {}).get('quality', {}).get('unique_apps', 0)}
-- Meaningful content: {chunk.get('meta', {}).get('quality', {}).get('has_meaningful_content', False)}
-
 Possible categories:
 1. Development / Coding - writing code, debugging, code review, scripting (VS Code, IntelliJ, PyCharm)
 2. Cloud Operations / DevOps - managing cloud resources, deployments, CI/CD, monitoring (Huawei Cloud console, Jenkins)
@@ -73,17 +64,31 @@ Possible categories:
 8. Idle / Break - away from keyboard, lunch, personal breaks
 9. Automation / Scripting - writing scripts, batch jobs, automation tasks
 
-Instructions:
-- Base your classification on the **summary_text** and metadata above.
-- Consider the dominant window/application as a strong hint.
-- Return ONLY valid JSON in this format:
-{{"category": str, "confidence": float, "rationale": str}}
-- Rationale should be concise (2-3 sentences), explain why this chunk belongs to the category, highlight key actions/tools/context, and capture the semantic activity.
-- include the names of projects, files, applications , window,application, url or ports that were actively used if they support understanding the category.
-- The rationale should be written so it can be used for embedding and similarity comparisons to task descriptions.
-IMPORTANT: Do NOT include any text outside the JSON object.
+**DECISION RULES:**
+- If multiple tools are used, classify by PRIMARY INTENT (e.g., browsing docs while coding = Development)
+- Browser usage is Research if visiting work docs/Stack Overflow WITH context of a work task
+- Browser usage is Distraction if visiting social media, news, entertainment sites
+- Rapid app switching (<10 sec) without meaningful actions suggests context confusion - be cautious
+- Idle periods >5 minutes should be Idle/Break even if app is open
+
+**YOUR TASK:**
+
+Metadata:
+- Dominant event: {dominant_event}
+- Event count: {event_count}
+- Window/application: {window}
+- Chunk duration: from {start_time} to {end_time}
+- Quality score: {chunk.get('meta', {}).get('quality', {}).get('quality_score', 'unknown')}
+- Unique apps: {chunk.get('meta', {}).get('quality', {}).get('unique_apps', 0)}
+
 Chunk Summary:
 {text}
+
+Return ONLY valid JSON:
+{{"category": str, "confidence": float (0.0-1.0), "rationale": str}}
+
+Rationale format: "Action: [what was done], Tools: [apps/files used], Context: [work context], Intent: [primary goal]"
+IMPORTANT: Do NOT include any text outside the JSON object.
 """
 
     for attempt in range(retries):
@@ -91,6 +96,7 @@ Chunk Summary:
             payload = {
                 "model": OLLAMA_MODEL,
                 "prompt": prompt,
+                "format": "json",
                 "options": {"temperature": temperature},
                 "stream": False,
             }
@@ -103,93 +109,119 @@ Chunk Summary:
                 category = parsed.get("category", "Unknown")
                 if category.lower() in ["unknown", "none", "error"]:
                     text_lower = text.lower()
-
-                    # --- Refined heuristic classification ---
-                    if any(k in text_lower for k in ["stackoverflow", "developer.huawei", "docs.huawei", "tutorial", "documentation", "research", "learn"]):
+                    if any(k in text_lower for k in ["stackoverflow", "developer.huawei", "docs.huawei", "tutorial", "documentation"]):
                         category = "Research / Learning"
 
-                    elif any(k in text_lower for k in ["facebook", "youtube", "instagram", "netflix", "reddit", "twitter", "gmail", "chrome personal", "news", "entertainment"]):
+                    elif any(k in text_lower for k in ["facebook", "youtube", "instagram", "netflix", "reddit", "twitter", "personal email", "news site", "entertainment"]):
                         category = "Browsing / Distraction"
 
-                    elif any(k in text_lower for k in ["chrome", "google", "wikipedia", "search", "browser"]):
-                        category = "Browsing / Research"
-
-                    elif any(k in text_lower for k in ["code", "visual studio", "pycharm", "intellij", "vscode", "sublime", "notepad++", ".py", ".java", ".js"]):
+                    elif any(k in text_lower for k in ["code", "visual studio", "pycharm", "intellij", "vscode", "sublime", "notepad++", "git", ".py", ".java", ".js", ".cpp", "commit", "debug"]):
                         category = "Development / Coding"
 
-                    elif any(k in text_lower for k in ["terminal", "bash", "shell", "cmd", "powershell", "ecs-ai", "server", "log", "error", "monitoring"]):
+                    elif any(k in text_lower for k in ["terminal", "bash", "shell", "cmd", "powershell", "ssh", "server", "log analysis", "error fix", "monitoring", "alert"]):
                         category = "System Maintenance / Troubleshooting"
 
-                    elif any(k in text_lower for k in ["welink", "teams", "outlook", "meeting", "call", "chat", "slack", "email"]):
+                    elif any(k in text_lower for k in ["welink", "teams", "outlook", "meeting", "call", "chat", "slack", "email", "zoom", "conference"]):
                         category = "Meetings / Communication"
 
-                    elif any(k in text_lower for k in ["jira", "ticket", "report", "dashboard", "timesheet", "form", "hr", "admin"]):
+                    elif any(k in text_lower for k in ["jira", "ticket", "report", "dashboard", "timesheet", "form", "hr portal", "admin panel"]):
                         category = "Administrative / Reporting"
 
-                    elif any(k in text_lower for k in ["jenkins", "deploy", "pipeline", "cicd", "build", "kubernetes", "docker", "cloud", "serverless"]):
+                    elif any(k in text_lower for k in ["jenkins", "deploy", "pipeline", "ci/cd", "build", "kubernetes", "docker", "cloud console", "huawei cloud", "serverless", "container"]):
                         category = "Cloud Operations / DevOps"
+
+                    elif any(k in text_lower for k in ["script", "automation", "cron", "batch", "scheduled task", "ansible", "puppet"]):
+                        category = "Automation / Scripting"
 
                     elif any(k in text_lower for k in ["break", "idle", "afk", "lunch", "coffee", "away"]):
                         category = "Idle / Break"
 
-                    else:
-                        category = "Context Switching / Unclear"
+                    # Multi-keyword check for generic browsers (chrome/firefox alone is ambiguous)
+                    elif any(k in text_lower for k in ["chrome", "firefox", "browser"]) and any(k in text_lower for k in ["search", "google", "wikipedia", "article"]):
+                        category = "Research / Learning"
 
+                    else:
+                        category = "Unknown"
 
                     parsed.update({
                         "category": category,
-                        "confidence": 0.3,  
-                        "rationale": parsed.get("rationale", "") + " | Heuristic fallback applied based on keywords."
+                        "confidence": 0.35,  # Lower confidence for heuristics
+                        "rationale": parsed.get("rationale", "") + f" [Heuristic fallback: matched keywords for {category}]"
                     })
-
-                return parsed
+            end = time.time()  # end timerP
+            elapsed = end - start
+            print(f"[classify_activity] ⏱ Chunk {chunk.get('chunk_id', '?')} classified in {elapsed:.2f} seconds")
+            return parsed
         except Exception as e:
             print(f"[classify_activity] Error: {e}. Retry {attempt+1}/{retries}...")
             time.sleep(2)
-
+    end = time.time()
+    print(f"[classify_activity] ❌ Chunk {chunk.get('chunk_id', '?')} failed after {end - start:.2f} seconds")
     return {"category": "Unknown", "confidence": 0.0, "rationale": "Failed after retries."}
 # -------------------------
 # Embedding
 # -------------------------
-# -------------------------
-# Embedding Helper
-# -------------------------
+
 from sentence_transformers import SentenceTransformer
 EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2"
 # Load embedding model
 embedding_model = SentenceTransformer(EMBEDDING_MODEL)
 
-def embed_text_batch(texts: List[str]) -> list:
-    """
-    Generate a vector embedding for the given text.
-    Returns a Python list of floats (suitable for Elasticsearch).
-    """
+def embed_text_batch(texts: List[str], show_progress: bool = False) -> np.ndarray:
     if not texts:
-        return []
-    return embedding_model.encode(texts, convert_to_numpy=True).tolist()
+        return np.array([])
+    
+    valid_texts = [t if t.strip() else "[empty]" for t in texts]
+
+    embeddings = embedding_model.encode(
+        valid_texts, 
+        convert_to_numpy=True,
+        normalize_embeddings=True,  
+        show_progress_bar=show_progress,
+        batch_size=32
+    )
+
+    return embeddings
+
 
 # -------------------------
 # Batch Classification
 # -------------------------
 
+
 def batch_classify_parallel(chunks: List[Dict[str, Any]], max_workers: int = MAX_WORKERS) -> List[Dict[str, Any]]:
     """Run classification for many chunks in parallel and attach results to each chunk."""
+    batch_start = time.time()
     enriched_chunks = []
+    inference_times = []
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_chunk = {executor.submit(classify_activity, chunk): chunk for chunk in chunks}
         for i, future in enumerate(as_completed(future_to_chunk), 1):
             chunk = future_to_chunk[future]
             try:
+                classify_start = time.time()
+
                 result = future.result()
+                classify_end = time.time()
+
+                inference_times.append(classify_end - classify_start)
                 # Attach classification fields directly into the chunk
                 chunk.update({
                     "category": result.get("category", "Unknown"),
                     "confidence": result.get("confidence", 0.0),
                     "rationale": result.get("rationale", ""),
                 })
+                try:
+                    start_dt = datetime.fromisoformat(chunk.get("start_time", ""))
+                    end_dt = datetime.fromisoformat(chunk.get("end_time", ""))
+                    duration_minutes = round((end_dt - start_dt).total_seconds() / 60, 1)
+                    chunk["duration"] = duration_minutes
+                except Exception:
+                    chunk["duration"] = None
+
                 enriched_chunks.append(chunk)
-                print(f"[✓] Classified {i}/{len(chunks)} → {result.get('category', 'Unknown')} ({round(result.get('confidence', 0.0)*100, 1)}%)")
+                print(f"[✓] Classified {i}/{len(chunks)} → {result.get('category', 'Unknown')} ({round(result.get('confidence', 0.0)*100, 1)}%) | {chunk.get('duration', '?')} min")                
             except Exception as e:
                 print(f"[✗] Error processing {chunk.get('chunk_id')}: {e}")
                 # fallback if classification fails
@@ -199,19 +231,49 @@ def batch_classify_parallel(chunks: List[Dict[str, Any]], max_workers: int = MAX
                     "rationale": f"Error: {e}"
                 })
                 enriched_chunks.append(chunk)
+    batch_end = time.time()
+    total_time = batch_end - batch_start
+    avg_inference_time = np.mean(inference_times) if inference_times else 0
+    throughput = (len(chunks) / total_time) * 60 if total_time > 0 else 0
+    print(f"[batch_classify_parallel] ⏱ Completed parallel classification for {len(chunks)} chunks in {batch_end - batch_start:.2f} seconds")
+    print("\n📊 --- Classification Performance Metrics ---")
+    print(f"  • Total chunks processed: {len(chunks)}")
+    print(f"  • Average inference time: {avg_inference_time:.2f} seconds per chunk")
+    print(f"  • Total wall-clock time: {total_time:.2f} seconds")
+    print(f"  • Throughput: {throughput:.2f} chunks/minute with {max_workers} parallel workers")
+    print("--------------------------------------------------")
 
+    # --- Embedding ---
+    embed_start = time.time()
     print(f"[⏳] Starting batch embeddings for {len(enriched_chunks)} chunks at {datetime.utcnow().isoformat()} UTC")
-    rationale_vec  = [c.get("rationale", "") for c in enriched_chunks]
-    summary_vec  = [c.get("summary_text", "") for c in enriched_chunks]
+    rationale_texts = [c.get("rationale", "") for c in enriched_chunks]
+    summary_texts  = [c.get("summary_text", "") for c in enriched_chunks]
 
-    vectorsR = embed_text_batch(rationale_vec)
-    vectorsS = embed_text_batch(summary_vec)
-    vectorsR = np.array(vectorsR)
-    vectorsS = np.array(vectorsS)
-    final_vec = 0.7 * vectorsR + 0.3* vectorsS
-
-    for chunk, vector in zip(enriched_chunks, final_vec):
+    """ combined_vectors = embed_text_pairs_weighted(
+        rationale_texts, 
+        summary_texts,
+        weight_a=0.7,  # Weight for rationale
+        weight_b=0.3   # Weight for summary
+    )
+    for chunk, vector in zip(enriched_chunks, combined_vectors):
         chunk["summary_vector"] = vector
+    embed_end = time.time()
+    print(f"[✅] Finished batch embeddings in {embed_end - embed_start:.2f} seconds at {datetime.utcnow().isoformat()} UTC")
+    """
+    print("[⏳] Embedding rationales...")
+    rationale_vectors = embed_text_batch(rationale_texts, show_progress=True)
+    
+    print("[⏳] Embedding summaries...")
+    summary_vectors = embed_text_batch(summary_texts, show_progress=True)
+    for chunk, rat_vec, sum_vec in zip(enriched_chunks, rationale_vectors, summary_vectors):
+        chunk["rationale_vector"] = rat_vec.tolist()
+        chunk["summary_vector"] = sum_vec.tolist()
+
+    embed_end = time.time()
+    print(f"[✅] Finished batch embeddings in {embed_end - embed_start:.2f} seconds")
+
+    total_elapsed = embed_end - batch_start
+    print(f"[batch_classify_parallel] ⏱ Total time for classification + embeddings: {total_elapsed:.2f} seconds")
     print(f"[✅] Finished batch embeddings at {datetime.utcnow().isoformat()} UTC")
 
     return enriched_chunks
@@ -244,6 +306,12 @@ def save_classifications_to_elasticsearch(classified_chunks: list, es: Elasticse
                             "dims": 768,
                             "index": True,
                             "similarity": "cosine"
+                        },
+                        "rationale_vector": {  
+                            "type": "dense_vector",
+                            "dims": 768,
+                            "index": True,
+                            "similarity": "cosine"
                         }
                     }
                 }
@@ -265,7 +333,9 @@ def save_classifications_to_elasticsearch(classified_chunks: list, es: Elasticse
             "summary_vector": chunk.get("summary_vector", []),
             "category": chunk.get("category", "Unknown"),
             "confidence": chunk.get("confidence", 0.0),
-            "rationale": chunk.get("rationale", "")
+            "rationale": chunk.get("rationale", ""),
+            "rationale_vector": chunk.get("rationale_vector", []),  # NEW
+
         }
         es.index(index=index, id=doc["chunk_id"], document=doc)
 

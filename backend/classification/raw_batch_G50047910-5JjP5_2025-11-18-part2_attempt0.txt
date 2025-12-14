@@ -1,0 +1,13 @@
+{
+  "date": "2025-11-18-part2",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee successfully deployed and tested a Spark-based data processing pipeline using Docker Compose.",
+  "activities": {
+    "Development / Coding": ["look", "look this is what i write", "Generating public/private rsa key pair. Enter file in which to save the key (/root/.ssh/id_rsa):", "pip list , grep ssh", "docker exec -it airflow-webserver pip list , grep ssh", "docker exec -it airflow-webserver /bin/bash airflow@bed9add26fdc:/opt/airflow$", "ssh-keygen -t rsa -b 4096"]
+  },
+  "insights": [
+    "The employee spent a significant amount of time reviewing and adjusting the Docker Compose configuration, indicating a need for more efficient workflow management.",
+    "The employee demonstrated efficient use of Docker Compose to manage the deployment and testing of the Spark pipeline.",
+    "The employee showed focus on detail when configuring the BashOperator with a specific command."
+  ]
+}

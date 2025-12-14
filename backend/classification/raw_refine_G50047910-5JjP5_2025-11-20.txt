@@ -1,0 +1,53 @@
+{
+  "date": "2025-11-20",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee spent most of their time creating a master thesis presentation using AI-powered tools, presenting information about Huawei's ICT infrastructure, and switching between different applications and presentations.",
+  "activities": {
+    "Browsing / Distraction": [
+      "typed: 'presentaion ai'",
+      "(7) Facebook",
+      "Real-time KPI aggregation"
+    ],
+    "System Maintenance / Troubleshooting": [
+      "Sub CreateMasterThesisPresentation()",
+      "With pptTextbox.TextFrame.TextRange .Text = empScores(idx)",
+      "End With",
+      "Went idle in chrome (Design sans titre - Présentation - Google Chrome)",
+      "Returned from idle (away 39s)",
+      "Switched to POWERPNT.EXE ([Light Color] Mainslides Template.pptx - PowerPoint)",
+      "Went idle in chrome (employee monitoring manual - Recherche Google - Google Chrome)",
+      "Returned from idle (away 51s)"
+    ],
+    "Research / Learning": [
+      "Smart employee monitoring and RAG chatbot thesis defense - Claude",
+      "huawei images - Recherche Google - Google Chrome",
+      "Switched to POWERPPT",
+      "Typed 'profitional'",
+      "Typed 'university'",
+      "Typed 'project'",
+      "Typed 'Huawei'",
+      "Sharing Link Validation",
+      "The 9th Huawei ICT Competition Roadshow Slides.pptx - Google Chrome",
+      "Switched between different applications and presentations",
+      "Pasted content: Presented to obtain the National Diploma of Master in Big Data and E-Commerce",
+      "Pasted content: Huawei is a leading global provider of information and communications technology (ICT) infrastructur .",
+      "Pasted content: 207,000+ Employees"
+    ],
+    "Development / Coding": [
+      "Switched to POWERPPT",
+      "Used shortcut: Switch App",
+      "Pasted content: AI-Powered Employee Activity Monitoring & Task Recommendation System",
+      "Code (Rapport.tex - V0Report - Visual Studio Code)",
+      "Code (Search)"
+    ],
+    "Idle / Break": [
+      "Switched to chrome (Smart employee monitoring and RAG chatbot thesis defense - Claude - Google Chrome)",
+      "Went idle in chrome (Proposal - Présentation - Google Chrome)"
+    ]
+  },
+  "insights": [
+    "The employee spent a significant amount of time searching for AI-powered presentation tools.",
+    "The employee used a variety of shortcuts to navigate between different applications and presentations, indicating a need for more efficient workflow.",
+    "The employee's work session was interrupted by multiple instances of typing 'give me full correct ocode', suggesting a need for more accurate feedback or guidance."
+  ]
+}

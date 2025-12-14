@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 import pytz
 
 router = APIRouter()
-es = Elasticsearch("http://localhost:9200")  # adjust if needed
+es = Elasticsearch("http://193.95.30.190:9200")  # adjust if needed
 INDEX_NAME = "employee_requests"
 if not es.indices.exists(index=INDEX_NAME):
     es.indices.create(

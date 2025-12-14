@@ -1,0 +1,14 @@
+{
+  "date": "2025-11-23-part3",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee worked on a summarization pipeline and embedded icons in a presentation.",
+  "activities": {
+    "Development / Coding": ["design a python project", "work on python project", "javaexclel files", "projectprepare excel fileshey"],
+    "System Maintenance / Troubleshooting": ["chatg", "can you explain this error"]
+  },
+  "insights": [
+    "The employee spent a significant amount of time browsing and searching for icons, suggesting potential distractions.",
+    "The employee worked on multiple projects simultaneously, including a presentation and a summarization pipeline.",
+    "The employee used specific tools such as ChatGPT to troubleshoot issues"
+  ]
+}

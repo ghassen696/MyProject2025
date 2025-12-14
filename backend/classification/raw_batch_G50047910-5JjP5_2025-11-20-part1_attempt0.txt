@@ -1,0 +1,14 @@
+{
+  "date": "2025-11-20-part1",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Created a master thesis presentation using AI-powered tools.",
+  "activities": {
+    "Browsing / Distraction": ["typed: 'presentaion ai'", "typed: 'is this wrong?'", "typed: 'give me full correcr ocode'"],
+    "System Maintenance / Troubleshooting": ["Sub CreateMasterThesisPresentation()", "With pptTextbox.TextFrame.TextRange .Text = empScores(idx)", "End With"]
+  },
+  "insights": [
+    "The employee spent a significant amount of time searching for AI-powered presentation tools.",
+    "The employee used a variety of shortcuts to navigate between different applications and presentations.",
+    "The employee's work session was interrupted by multiple instances of typing 'give me full correcr ocode', suggesting a need for more accurate feedback or guidance."
+  ]
+}

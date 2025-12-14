@@ -1,0 +1,19 @@
+{
+  "date": "2025-11-23-part1",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee worked on a presentation with a summarization pipeline and embedded icons.",
+  "activities": {
+    "Browsing / Distraction": ["embedding model llm embed icon - Google Search - Google Chrome", "huawei logo svg - Recherche Google - Google Chrome"],
+    "Development / Coding": [
+      "Generate image request - Google Chrome",
+      "Diagramme vierge: Lucidchart - Google Chrome",
+      "Documents - Google Chrome",
+      "Copy of Blank diagram: Lucidchart - Google Chrome"
+    ]
+  },
+  "insights": [
+    "The employee spent a significant amount of time browsing and searching for icons, suggesting potential distractions.",
+    "The employee used various tools to generate images, but the process was not highly efficient.",
+    "The employee worked on multiple projects simultaneously, including a presentation and a summarization pipeline."
+  ]
+}

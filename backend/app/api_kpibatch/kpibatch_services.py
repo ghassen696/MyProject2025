@@ -187,7 +187,7 @@ def transform_es_doc(doc: dict) -> ProductivityData:
 
     # Donut chart
     donut_chart = [
-        DonutCategory(category=app["category"], count=app["count"])
+        DonutCategory(category=app["category"], minutes=app["minutes"])
         for app in src.get("donut_chart", [])
     ]
 
@@ -195,11 +195,11 @@ def transform_es_doc(doc: dict) -> ProductivityData:
         employee_id=src["employee_id"],
         date=src["date"],
         total_keystrokes=src.get("total_keystrokes", 0),
-        active_min=src.get("active_min", 0),
+        active_min=sum(s.get("active_min", 0) for s in src.get("sessions", [])),
         idle_min=src.get("idle_min", 0),
         pause_min=src.get("pause_min", 0),
         productivity_score=src.get("productivity_score", 0),
-        focus_ratio=src.get("focus_ratio", 0),
+        focus_ratio=src.get("focus_norm", 0),
         shortcut_count=src.get("shortcut_count", 0),
         heartbeat_count=src.get("heartbeat_count", 0),
 

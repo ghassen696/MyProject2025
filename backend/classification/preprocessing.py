@@ -1,15 +1,3 @@
-"""
-preprocessing_enhanced.py
-
-Enhanced preprocessing module for employee activity logs.
-
-Changes in this version:
-- Filters out unnecessary events (keeps only meaningful ones)
-- Uses idle duration from idle_end (no redundant handling)
-- Normalizes event aliases (e.g., "consent given to keylogger" → "consent_given")
-- Slightly refines adaptive chunking and quality scoring
-- Adds optional summary_text and dominant_event fields for each chunk
-"""
 import tiktoken  # Optional dependency
 from elasticsearch import Elasticsearch
 from typing import List, Dict, Any, Optional
@@ -22,14 +10,12 @@ from collections import Counter
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# -------------------------
-# Configuration / Constants
-# -------------------------
-DEFAULT_MAX_LOGS_PER_CHUNK = 100
-DEFAULT_MAX_TOKEN_APPROX = 1000
-DEFAULT_SLICE_MINUTES = 20
-MIN_CHUNK_SIZE = 5
-WINDOW_SWITCH_THRESHOLD_SEC = 180  
+
+DEFAULT_MAX_LOGS_PER_CHUNK = 120
+DEFAULT_MAX_TOKEN_APPROX = 1800
+DEFAULT_SLICE_MINUTES = 30
+MIN_CHUNK_SIZE = 18
+WINDOW_SWITCH_THRESHOLD_SEC = 240  
 
 
 KEY_MAP = {
@@ -52,6 +38,32 @@ EVENT_ALIASES = {
     "idlestart": "idle_start",
 }
 
+# -------------------------
+# Token counting setup (cached)
+# -------------------------
+_TIKTOKEN_ENCODER = None
+
+def get_token_encoder():
+    """Lazy-load and cache the tiktoken encoder."""
+    global _TIKTOKEN_ENCODER
+    if _TIKTOKEN_ENCODER is None:
+        try:
+            import tiktoken
+            _TIKTOKEN_ENCODER = tiktoken.get_encoding("cl100k_base")
+            logger.info("Loaded tiktoken encoder (cl100k_base)")
+        except ImportError:
+            logger.warning("tiktoken not available, using fallback token estimation")
+            _TIKTOKEN_ENCODER = False  # Sentinel value to avoid retrying
+    return _TIKTOKEN_ENCODER
+
+
+def count_tokens(text: str) -> int:
+    """Count tokens in text, with fallback if tiktoken unavailable."""
+    encoder = get_token_encoder()
+    if encoder and encoder is not False:
+        return len(encoder.encode(text))
+    # Fallback: rough estimation
+    return len(text) // 4
 # -------------------------
 # Timestamp & Date helpers
 # -------------------------
@@ -303,6 +315,9 @@ def adaptive_chunk_logs(
         nonlocal current, approx_tokens, start_time, current_window
         if current:
             quality = assess_chunk_quality(current)
+            # Cache quality in the chunk itself as metadata
+            for event in current:
+                event["_cached_chunk_quality"] = quality  # Store in each event
             if quality["sufficient_data"] and len(current) >= min_chunk_size:
                 chunks.append(current)
         current, approx_tokens, start_time, current_window = [], 0, None, None
@@ -316,8 +331,14 @@ def adaptive_chunk_logs(
         slice_adj = max(10, slice_minutes - event_count // 20)  # gradual adaptation
 
         # Split on idle/pause
-        if ev["event"] in ("pause", "idle_start", "resume") and current:
-            finalize()
+        if ev["event"] in ("pause", "idle_start") and current:
+            idle_duration = ev.get("duration_sec", 0)
+            if idle_duration > 300:  # Only split if idle > 5 minutes
+                finalize()
+        elif ev["event"] == "resume" and current:
+            # Only split on resume if previous chunk was substantial
+            if len(current) >= min_chunk_size * 2:
+                finalize()
 
         # Time-based split
         if start_time and (ts - start_time).total_seconds() > slice_adj * 60:
@@ -327,20 +348,33 @@ def adaptive_chunk_logs(
         # Window-based split
 # Window-based split
         if current_window and ev.get("window") != current_window:
-            if len(current) >= min_chunk_size and (ts - start_time).total_seconds() >= WINDOW_SWITCH_THRESHOLD_SEC:
+            recent_switches = sum(1 for e in current[-10:] if e.get("event") == "window_switch")
+
+            # Only split if:
+            # 1. We have enough events AND
+            # 2. Not rapidly switching (< 3 switches in last 10 events) AND
+            # 3. Enough time has passed OR we hit the event limit
+            if (len(current) >= min_chunk_size and 
+                recent_switches < 3 and
+                ((ts - start_time).total_seconds() >= WINDOW_SWITCH_THRESHOLD_SEC or len(current) >= max_logs)):
                 finalize()
                 start_time, current_window = ts, ev.get("window")
             else:
+                # Just update window, don't split
                 current_window = ev.get("window")
-
 
 
         current.append(ev)
         approx_tokens += max(1, len(ev.get("description", "")) // 4)
 
         # Token or log limit
-        if len(current) >= max_logs or approx_tokens >= max_tokens:
-            finalize()
+
+        if (len(current) >= max_logs or approx_tokens >= max_tokens):
+            chunk_duration = (ts - start_time).total_seconds()
+            if chunk_duration >= 120:  # At least 2 minutes
+                finalize()
+            elif len(current) >= max_logs * 1.5:  # Hard limit
+                finalize()
 
     finalize()
     return chunks
@@ -348,7 +382,7 @@ def adaptive_chunk_logs(
 # -------------------------
 # Elasticsearch helpers
 # -------------------------
-def fetch_logs_for_employee(es, index, employee_id, date_str, size=10000):
+"""def fetch_logs_for_employee(es, index, employee_id, date_str, size=10000):
     date_obj = normalize_date(date_str)
     start_dt = datetime.combine(date_obj, datetime.min.time(), tzinfo=timezone.utc)
     end_dt = datetime.combine(date_obj, datetime.max.time(), tzinfo=timezone.utc)
@@ -379,7 +413,54 @@ def fetch_logs_for_employee(es, index, employee_id, date_str, size=10000):
 
     es.clear_scroll(scroll_id=scroll_id)
     return all_logs
+"""
+def fetch_logs_for_employee(es, index, employee_id, date_str, size=10000):
+    """Fetch all logs for an employee on a specific date with proper scroll cleanup."""
+    date_obj = normalize_date(date_str)
+    start_dt = datetime.combine(date_obj, datetime.min.time(), tzinfo=timezone.utc)
+    end_dt = datetime.combine(date_obj, datetime.max.time(), tzinfo=timezone.utc)
+    start_ms, end_ms = int(start_dt.timestamp() * 1000), int(end_dt.timestamp() * 1000)
 
+    query = {
+        "query": {
+            "bool": {
+                "must": [
+                    {"term": {"employee_id.keyword": employee_id}},
+                    {"range": {"timestamp": {"gte": start_ms, "lte": end_ms}}}
+                ]
+            }
+        },
+        "sort": [{"timestamp": {"order": "asc"}}]
+    }
+
+    scroll_id = None
+    all_logs = []
+    
+    try:
+        resp = es.search(index=index, body=query, size=size, scroll="2m")
+        scroll_id = resp.get("_scroll_id")
+        hits = resp["hits"]["hits"]
+        all_logs = [h["_source"] for h in hits]
+
+        while hits:
+            resp = es.scroll(scroll_id=scroll_id, scroll="2m")
+            scroll_id = resp.get("_scroll_id")
+            hits = resp["hits"]["hits"]
+            all_logs.extend([h["_source"] for h in hits])
+            
+    except Exception as e:
+        logger.error(f"Error during scroll for {employee_id} on {date_str}: {e}")
+        raise  # Re-raise after logging
+    finally:
+        # ALWAYS clean up scroll context, even on errors
+        if scroll_id:
+            try:
+                es.clear_scroll(scroll_id=scroll_id)
+                logger.debug(f"Cleared scroll context: {scroll_id}")
+            except Exception as cleanup_error:
+                logger.warning(f"Failed to clear scroll context {scroll_id}: {cleanup_error}")
+    
+    return all_logs
 def clean_description(text: str) -> str:
     if not text:
         return ""
@@ -418,7 +499,7 @@ def prepare_chunks_for_pipeline(
     logs: List[Dict[str, Any]],
     employee_id: Optional[str] = None,
     date_str: Optional[str] = None,
-    min_quality_score: float = 0.5,
+    min_quality_score: float = 0.6,
 
     **chunk_opts
 ) -> List[Dict[str, Any]]:
@@ -440,20 +521,34 @@ def prepare_chunks_for_pipeline(
 
     # Perform chunking
     raw_chunks = adaptive_chunk_logs(logs, **chunk_opts)
-    scores = [assess_chunk_quality(ch)["quality_score"] for ch in raw_chunks]
-    sufficient_flags = [assess_chunk_quality(ch)["sufficient_data"] for ch in raw_chunks]
-    for i, (score, suff) in enumerate(zip(scores, sufficient_flags)):
-        print(f"Chunk {i}: quality_score={score:.3f}, sufficient_data={suff}")
+
+    # Use cached quality from chunking phase
+    for i, ch in enumerate(raw_chunks):
+        if ch and "_cached_chunk_quality" in ch[0]:
+            quality = ch[0]["_cached_chunk_quality"]
+            print(f"Chunk {i}: quality_score={quality['quality_score']:.3f}, sufficient_data={quality['sufficient_data']}")
+        else:
+            # Fallback if cache missing (shouldn't happen)
+            quality = assess_chunk_quality(ch)
+            print(f"Chunk {i}: quality_score={quality['quality_score']:.3f}, sufficient_data={quality['sufficient_data']} (recalculated)")
 
     out: List[Dict[str, Any]] = []
 
     for i, ch in enumerate(raw_chunks):
         if not ch:
             continue
+        
+        # Use cached quality from chunking phase
+        if "_cached_chunk_quality" in ch[0]:
+            quality = ch[0]["_cached_chunk_quality"]
+        else:
+            # Fallback if cache missing
+            quality = assess_chunk_quality(ch)
+            logger.warning(f"Chunk {i} missing cached quality, recalculating")
+        
         start, end = ch[0]["timestamp"], ch[-1]["timestamp"]
         apps = [e.get("application", "unknown") for e in ch]
         dominant_app = max(set(apps), key=apps.count) if apps else "unknown"
-        quality = assess_chunk_quality(ch)
         dominant_event = Counter(e["event"] for e in ch).most_common(1)[0][0]
         cleaned_events = []
         for e in ch:
@@ -485,11 +580,7 @@ def prepare_chunks_for_pipeline(
         if switch_apps and len(switch_apps) > 1:
             cleaned_events.append(f"- [{last_switch_time.strftime('%H:%M:%S')}] Toggled between {', '.join(set(switch_apps))}")
         summary_text = "\n".join(cleaned_events)
-        try:
-            enc = tiktoken.get_encoding("cl100k_base")
-            token_count = len(enc.encode(summary_text))
-        except ImportError:
-            token_count = len(summary_text) // 4 + len(ch)  # Fallback: ~4 chars/token + event count
+        token_count = count_tokens(summary_text)
         if token_count > 2000:
             cleaned_events = cleaned_events[:len(cleaned_events)//2]
             summary_text = "\n".join(cleaned_events) + "\n[Truncated due to length]"
@@ -522,8 +613,14 @@ def prepare_chunks_for_pipeline(
     out = [
         c for c in out 
         if c["meta"]["quality"]["sufficient_data"] and 
-           c["meta"]["quality"]["quality_score"] >= min_quality_score
+           c["meta"]["quality"]["quality_score"] >= min_quality_score and 
+            c["meta"]["original_event_count"] >= 10 
+
     ]
+    for chunk_data in out:
+        for event in chunk_data.get("events", []):
+            event.pop("_cached_chunk_quality", None)
+    
     return out
 
 # -------------------------

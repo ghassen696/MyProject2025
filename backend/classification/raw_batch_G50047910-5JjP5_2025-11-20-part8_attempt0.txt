@@ -1,0 +1,14 @@
+{
+  "date": "2025-11-20-part8",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Created a master thesis presentation using AI-powered tools and presented information about Huawei's ICT infrastructure.",
+  "activities": {
+    "Development / Coding": ["Switched to explorer", "Switched to chrome (Proposal - Présentation - Google Chrome)", "Switched to chrome (Smart employee monitoring and RAG chatbot thesis defense - Claude - Google Chrome)"],
+    "Research / Learning": ["Used a variety of shortcuts to navigate between different applications and presentations"]
+  },
+  "insights": [
+    "The employee spent most of their time switching between different applications and presentations.",
+    "The employee used a variety of shortcuts to navigate between different applications and presentations, indicating a need for more efficient workflow.",
+    "The employee's work session was interrupted by multiple instances of typing 'give me full correct ocode', suggesting a need for more accurate feedback or guidance."
+  ]
+}

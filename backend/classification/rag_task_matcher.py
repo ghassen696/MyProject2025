@@ -67,7 +67,7 @@ Return JSON:
         """
         try:
             resp = requests.post(
-                "http://localhost:11434/api/generate",
+                "http://193.95.30.190:11434/api/generate",
                 json={"model": OLLAMA_MODEL, "prompt": prompt, "options":{"temperature":0.3}, "stream":False},
                 timeout=120
             )

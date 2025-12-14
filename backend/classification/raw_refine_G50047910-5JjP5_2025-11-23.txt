@@ -1,0 +1,40 @@
+{
+  "date": "2025-11-23",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee worked on a presentation with a summarization pipeline and embedded icons. The employee completed summarization pipeline tasks using ChatGPT and generated Excel files for client B.",
+  "activities": {
+    "Browsing / Distraction": [
+      "embedding model llm embed icon - Google Search - Google Chrome",
+      "huawei logo svg - Recherche Google - Google Chrome"
+    ],
+    "Development / Coding": [
+      "Generate image request - Google Chrome",
+      "Diagramme vierge: Lucidchart - Google Chrome",
+      "Copy of Blank diagram: Lucidchart - Google Chrome",
+      "Switched to chrome (Generate image request - Google Chrome)",
+      "Switched to Code (taskMatcher_router.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "design a python project",
+      "work on python project",
+      "javaexclel files",
+      "projectprepare excel fileshey"
+    ],
+    "Research / Learning": [
+      "Switched to chrome (Diagramme vierge: Lucidchart - Google Chrome)",
+      "Typed 'reult' and 'result emoji'",
+      "Typed 'logo' and "
+    ],
+    "System Maintenance / Troubleshooting": [
+      "used specific tools such as ChatGPT to troubleshoot issues",
+      "Used shortcut: Switch App - [18:40:25] typed: 'embed_tectxt'"
+    ],
+    "Idle / Break": [
+      "Went idle in chrome (taskPrediction_router.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code) - Returned from idle (away 1s)",
+      "Went idle in chrome (Vector normalization assessment - Claude - Google Chrome) - Went idle in chrome (taskMatcher_router.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code) - typed: 'now' - Went idle in chrome (Vector normalization assessment - Claude - Google Chrome)"
+    ]
+  },
+  "insights": [
+    "The employee worked on multiple projects simultaneously, including a python-based IA project and a summarization pipeline.",
+    "The employee used ChatGPT to complete summarization pipeline tasks and generate Excel files for client B.",
+    "The employee spent time troubleshooting issues using specific tools such as ChatGPT."
+  ]
+}

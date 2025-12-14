@@ -4,6 +4,7 @@ from pyspark.sql.functions import (
 )
 from pyspark.sql.window import Window
 from functools import reduce
+from datetime import date
 
 # ----------------------------
 # Spark Init
@@ -27,47 +28,50 @@ df = df.filter(~(
     ((length(col("text")) == 0) | col("text").rlike("^<Key.*>$"))
 ))
 
-from pyspark.sql.functions import when
-from pyspark.sql.functions import coalesce
+from pyspark.sql.functions import when,lower,regexp_replace,coalesce,regexp_extract
 
-from pyspark.sql.functions import regexp_extract
 
 # Extract application name from window title
 # Pattern: last part after last ' - '
-df = df.withColumn("app_category",
-    when(col("application").rlike("(?i)(vscode|pycharm|intellij|eclipse|sublime|notepad\\+\\+|.*\\.py$|.*\\.exe$)"), "Coding")
-    .when(col("application").rlike("(?i)(chrome|firefox|edge|safari|brave)"), "Browsing")
-    .when(col("application").rlike("(?i)(slack|teams|zoom|skype|wechat|qq|feishu|ding)"), "Communication")
-    .when(col("application").rlike("(?i)(word|excel|powerpoint|wps|onenote|acrobat|pdf)"), "Documentation")
-    .when(col("application").rlike("(?i)(outlook|gmail|thunderbird)"), "Email")
-    .when(col("application").rlike("(?i)(jira|confluence|trello|asana|notion|clickup)"), "Project Management")
-    .when(col("application").rlike("(?i)(vmware|virtualbox|remote desktop|xshell|xftp|putty|securecrt)"), "DevOps / Remote Access")
-    .when(col("application").rlike("(?i)(mysql|dbeaver|navicat|datagrip|sql developer)"), "Database Tools")
-    .when(col("application").rlike("(?i)(photoshop|illustrator|figma|canva|xd|gimp)"), "Design")
-    .when(col("application").rlike("(?i)(huawei cloud|cloud console|obs browser|terraform|ansible|kubectl)"), "Cloud / Infrastructure")
-    .when(col("application").rlike("(?i)(youtube|facebook|messenger)"), "Social / Entertainment")
-    .otherwise("Other")
-).withColumn(
-    "subcategory",
-    when(col("window").rlike("(?i)(vscode|pycharm|intellij|eclipse|sublime|notepad\\+\\+)"), "IDE")
-    .when(col("window").rlike("(?i)(chrome|firefox|edge|safari|brave)"), "Web Browser")
-    .when(col("window").rlike("(?i)(slack|teams|zoom|skype|wechat|qq|feishu|ding)"), "Chat / Meetings")
-    .when(col("window").rlike("(?i)(word|wps)"), "Word Processor")
-    .when(col("window").rlike("(?i)(excel)"), "Spreadsheet")
-    .when(col("window").rlike("(?i)(powerpoint)"), "Presentation")
-    .when(col("window").rlike("(?i)(acrobat|pdf)"), "PDF Tools")
-    .when(col("window").rlike("(?i)(jira|trello|asana|clickup)"), "Task Tracking")
-    .when(col("window").rlike("(?i)(confluence|notion)"), "Knowledge Base")
-    .when(col("window").rlike("(?i)(vmware|virtualbox|remote desktop)"), "Virtualization / Remote Desktop")
-    .when(col("window").rlike("(?i)(xshell|xftp|putty|securecrt)"), "SSH / Terminal Tools")
-    .when(col("window").rlike("(?i)(mysql|dbeaver|navicat|datagrip|sql developer)"), "Database Client")
-    .when(col("window").rlike("(?i)(photoshop|illustrator|figma|canva|xd|gimp)"), "Design Tools")
-    .when(col("window").rlike("(?i)(huawei cloud|cloud console|obs browser)"), "Cloud Console")
-    .when(col("window").rlike("(?i)(terraform|ansible|kubectl)"), "Infra-as-Code / CLI")
-    .when(col("window").rlike("(?i)(youtube|facebook|messenger)"), "Social Media / Entertainment")
+df = df.withColumn("app_lower", lower(col("application")))
+df = df.withColumn("window_lower", lower(col("window")))
+df = df.withColumn(
+    "window_lower",
+    regexp_replace(
+        col("window_lower"),
+        r"\s-\s(chrome|firefox|edge|brave|visual studio code|vscode|pycharm|intellij|sublime|eclipse|notepad\+\+|word|excel|powerpoint|canva|teams|zoom|slack|meet|webex|welink)$",
+        ""
+    )
+)
+df = df.withColumn(
+    "category",
+    when(col("window_lower").rlike("vscode|vs code|pycharm|intellij|sublime|eclipse|\\.py|\\.ts|\\.js|\\.java"), "Coding")
+    .when(col("window_lower").rlike("jira|confluence|asana|trello|clickup|notion"), "Project Work")
+    .when(col("window_lower").rlike("excel|sheet|table"), "Analysis")
+    .when(col("window_lower").rlike("chatgpt|claude|gemini|research|google search"), "Research")
+    .when(col("window_lower").rlike("doc|word|notepad|writer|lucidchart|diagram|diagramme|flowchart|drawio"), "Documentation")
+    .when(col("window_lower").rlike("ppt|powerpoint|canva"), "Presentation")
+    .when(col("window_lower").rlike("terminal|cmd|powershell|bash|ssh|kubectl|ansible|docker"), "DevOps")
+    .when(col("window_lower").rlike("teams|zoom|meet|slack|webex|welink|call"), "Meetings & Communication")
+    .when(col("window_lower").rlike("youtube|facebook|instagram|tiktok"), "Entertainment")
+
+    # ----------------------
+    # 2. APPLICATION FALLBACK
+    # ----------------------
+    .when(col("app_lower").rlike("vscode|pycharm|intellij|eclipse|sublime"), "Coding")
+    .when(col("app_lower").rlike("chrome|firefox|edge|brave"), "Browsing")
+    .when(col("app_lower").rlike("teams|slack|zoom|meet|welink"), "Meetings & Communication")
+    .when(col("app_lower").rlike("excel|spreadsheet"), "Analysis")
+    .when(col("app_lower").rlike("word|writer"), "Documentation")
+    .when(col("app_lower").rlike("powerpoint|ppt|canva"), "Presentation")
+    .when(col("app_lower").rlike("mysql|dbeaver|datagrip|navicat"), "Database Tools")
+    .when(col("app_lower").rlike("photoshop|illustrator|figma|canva"), "Design")
+
+    # ----------------------
+    # 3. DEFAULT
+    # ----------------------
     .otherwise("Other")
 )
-
 
 
 df = df.withColumn("timestamp", (col("timestamp") / 1000).cast("double"))
@@ -75,27 +79,44 @@ df = df.withColumn("timestamp", from_unixtime(col("timestamp")).cast("timestamp"
 # ----------------------------
 # Filter logs by day
 # ----------------------------
-#from pyspark.sql.functions import current_date
+from pyspark.sql.functions import current_date
 #df = df.withColumn("date", to_date(col("timestamp"))).filter(col("date") == current_date())
 
-target_date = "2025-10-22"
+target_date = "2025-11-22"
 df = df.withColumn("date", to_date(col("timestamp"))).filter(col("date") == lit(target_date))
+#target_date = date.today().strftime("%Y-%m-%d")
 
 from pyspark.sql.functions import collect_list, struct, sum as sum_
 
 def donut_metrics(df):
-    category_usage = df.groupBy("employee_id", "app_category") \
-        .agg(count("*").alias("event_count")) \
+
+    # Calculate time spent between window events
+    w = Window.partitionBy("employee_id").orderBy("timestamp")
+
+    df_window = df \
+        .filter(col("event") == "window_switch") \
+        .withColumn("prev_timestamp", lag("timestamp").over(w)) \
+        .withColumn("prev_category", lag("category").over(w)) \
+        .withColumn("time_spent_min", 
+            (col("timestamp").cast("long") - col("prev_timestamp").cast("long")) / 60
+        ) \
+        .filter(col("time_spent_min") > 0)
+
+    # Aggregate donut slices using TIME instead of event count
+    category_usage = df_window.groupBy("employee_id", "prev_category") \
+        .agg(sum("time_spent_min").alias("minutes")) \
         .groupBy("employee_id") \
         .agg(
             collect_list(
                 struct(
-                    col("app_category").alias("category"),
-                    col("event_count").alias("count")
+                    col("prev_category").alias("category"),
+                    col("minutes").alias("minutes")
                 )
             ).alias("donut_chart")
         )
+
     return category_usage
+
 
 
 # ----------------------------
@@ -207,6 +228,7 @@ def app_metrics(df):
 
 def session_metrics(df):
     # Base session start/end
+    df = df.filter(col("session_id").isNotNull())
     session_df = df.groupBy("employee_id", "session_id") \
         .agg(
             min_("timestamp").alias("session_start"),
@@ -298,7 +320,13 @@ def general_metrics(df):
         .withColumn("idle_pct", (col("idle_min")/col("total_min")*100)) \
         .withColumn("pause_pct", (col("pause_min")/col("total_min")*100))
 
-    # Keystrokes per active hour (with restricted events)
+    # Convert active minutes → hours
+    df_time = df_time.withColumn(
+        "active_hours",
+        col("active_min") / 60
+    )
+
+    # Keystrokes per active hour
     keystrokes_per_active_hour = df.groupBy("employee_id", hour(col("timestamp")).alias("hour")) \
         .agg(
             sum((col("event") == "keystrokes").cast("int")).alias("keystrokes"),
@@ -306,40 +334,48 @@ def general_metrics(df):
         .groupBy("employee_id") \
         .agg(collect_list(struct("hour","keystrokes")).alias("keystrokes_per_active_hour"))
 
-    # Unique applications used per day
+    # Unique apps
     unique_apps = df.filter(col("application").isNotNull()) \
         .groupBy("employee_id") \
         .agg(countDistinct("application").alias("unique_apps_count"))
 
-    # Event diversity (normalized)
+    # Event diversity
     event_diversity = df.groupBy("employee_id") \
         .agg(countDistinct("event").alias("distinct_event_types")) \
         .withColumn("event_div_norm", least(col("distinct_event_types")/lit(10), lit(1)))
 
-    # Focus ratio = chars / active minutes
+    # Focus ratio = chars / active hours
     typing_time = df.filter(col("event") == "keystrokes") \
         .groupBy("employee_id") \
         .agg(sum(length(col("text"))).alias("typing_chars"))
-        
+
     df_time = df_time.join(typing_time, "employee_id", "left") \
         .fillna(0, subset=["typing_chars"]) \
-        .withColumn("focus_ratio", col("typing_chars") / (col("active_min")+1))
+        .withColumn(
+            "focus_ratio",
+            col("typing_chars") / (col("active_hours") + lit(0.0001))
+        )
 
     # Context switching = window switches / active hours
     window_switches = df.filter(col("event") == "window_switch") \
         .groupBy("employee_id") \
         .agg(count("*").alias("tmp_window_switch_count"))
+
     df_time = df_time.join(window_switches, "employee_id", "left") \
         .fillna(0, subset=["tmp_window_switch_count"]) \
-        .withColumn("context_switch_rate", col("tmp_window_switch_count") / ((col("active_min")/60)+1))\
+        .withColumn(
+            "context_switch_rate",
+            col("tmp_window_switch_count") / (col("active_hours") + lit(0.0001))
+        ) \
         .drop("tmp_window_switch_count")
 
-    # Active events restricted
+    # Active events
     active_events = df.filter(col("event").isin("keystrokes", "window_switch", "clipboard_paste", "shortcut")) \
         .groupBy("employee_id") \
         .agg(count("*").alias("active_events"))
 
     return df_time, keystrokes_per_active_hour, unique_apps, event_diversity, active_events
+
 
 # ----------------------------
 # Call all KPI functions
@@ -354,7 +390,7 @@ dfs.extend(app_metrics(df))
 dfs.append(session_metrics(df))
 dfs.extend(window_metrics(df))
 dfs.extend(general_metrics(df))
-dfs.append(donut_metrics(df))   # 🔥 Add this
+dfs.append(donut_metrics(df))   
 dfs.append(window_time_metrics(df))
 
 
@@ -367,9 +403,9 @@ summary_df = summary_df.withColumn("doc_id", concat_ws("-", col("employee_id"), 
 from pyspark.sql.functions import greatest, least
 
 summary_df = summary_df \
-    .withColumn("focus_norm", least(col("focus_ratio")/5, lit(1))) \
+    .withColumn("focus_norm", least(col("focus_ratio")/6000, lit(1))) \
     .withColumn("idle_norm", (100 - col("idle_pct"))/100) \
-    .withColumn("context_norm", 1 - least(col("context_switch_rate")/50, lit(1))) \
+    .withColumn("context_norm", 1 - least(col("context_switch_rate")/120, lit(1))) \
     .withColumn("event_div_norm", least(col("distinct_event_types")/6, lit(1))) \
     .withColumn("productivity_score",
         ((col("focus_norm")*0.4) +

@@ -19,7 +19,7 @@ class RawActivityEvent(BaseModel):
     duration_minutes: Optional[float]
     
 router = APIRouter()
-es = Elasticsearch("http://localhost:9200")  # adjust if using config
+es = Elasticsearch("http://193.95.30.190:9200")
 
 def get_tunis_today_range():
     """Return start and end of today in Tunis timezone as epoch milliseconds"""
@@ -38,31 +38,70 @@ def get_raw_activity(
     employee_id: Optional[str] = None,
     start_ts: Optional[int] = None,
     end_ts: Optional[int] = None,
-    page: int = 1,         # new
-    page_size: int = 100   # new
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=1000),
+    fetch_all: bool = Query(False, description="Fetch all logs ignoring pagination")
 ):
     """
-    Fetch employee raw activity events with pagination.
-    Defaults to today's events in Tunis timezone if start_ts/end_ts not provided.
+    Fetch employee raw activity events.
+    
+    - Standard pagination with page/page_size
+    - Use fetch_all=true to get ALL logs (ignores page/page_size)
+    - Defaults to today's events in Tunis timezone if start_ts/end_ts not provided
     """
     must = []
 
     if employee_id:
         must.append({"term": {"employee_id.keyword": employee_id}})
 
-    if start_ts is None or end_ts is None:
+    if start_ts is None and end_ts is None:
         start_ts, end_ts = get_tunis_today_range()
+    elif start_ts is None:
+        start_ts, _ = get_tunis_today_range()
+    elif end_ts is None:
+        _, end_ts = get_tunis_today_range()
 
-    range_query = {}
-    if start_ts is not None:
-        range_query["gte"] = start_ts
-    if end_ts is not None:
-        range_query["lte"] = end_ts
-    must.append({"range": {"timestamp": range_query}})
-
+    must.append({"range": {"timestamp": {"gte": start_ts, "lte": end_ts}}})
     query = {"bool": {"must": must}}
 
-    # calculate offset
+    # If fetch_all=true, use scroll API to get ALL documents
+    if fetch_all:
+        all_events = []
+        
+        # Initial search with scroll
+        res = es.search(
+            index="employee_activity",
+            body={
+                "query": query,
+                "sort": [{"timestamp": {"order": "asc"}}]
+            },
+            scroll='2m', 
+            size=1000,    
+        )
+        
+        scroll_id = res['_scroll_id']
+        total = res["hits"]["total"]["value"]
+        
+        # Get first batch
+        all_events.extend([hit["_source"] for hit in res["hits"]["hits"]])
+        
+        # Continue scrolling until no more results
+        while len(res['hits']['hits']) > 0:
+            res = es.scroll(scroll_id=scroll_id, scroll='2m')
+            all_events.extend([hit["_source"] for hit in res["hits"]["hits"]])
+        
+        # Clean up scroll context
+        es.clear_scroll(scroll_id=scroll_id)
+        
+        return {
+            "total": total,
+            "page": 1,
+            "page_size": len(all_events),
+            "events": all_events,
+            "fetched_all": True
+        }
+    
+    # Standard pagination
     from_ = (page - 1) * page_size
 
     res = es.search(
@@ -72,7 +111,7 @@ def get_raw_activity(
             "sort": [{"timestamp": {"order": "asc"}}]
         },
         from_=from_,
-        size=page_size
+        size=page_size,
     )
 
     total = res["hits"]["total"]["value"]
@@ -82,5 +121,7 @@ def get_raw_activity(
         "total": total,
         "page": page,
         "page_size": page_size,
-        "events": events
+        "total_pages": (total + page_size - 1) // page_size,
+        "events": events,
+        "fetched_all": False
     }

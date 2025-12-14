@@ -44,7 +44,7 @@ class AppUsage(BaseModel):
 
 class DonutCategory(BaseModel):
     category: str
-    count: int
+    minutes: float
 
 
 class TopWindow(BaseModel):

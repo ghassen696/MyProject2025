@@ -5,7 +5,7 @@ from elasticsearch import Elasticsearch
 import pytz
 from .requests_routes import PAUSE_TYPES
 router = APIRouter()
-es = Elasticsearch("http://localhost:9200")  # adjust if needed
+es = Elasticsearch("http://193.95.30.190:9200")  # adjust if needed
 
 # ------------------- Helper Functions ------------------- #
 def get_tunis_day_range(date_str: Optional[str] = None):

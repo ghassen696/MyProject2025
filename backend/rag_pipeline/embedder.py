@@ -79,7 +79,7 @@ from elasticsearch.helpers import bulk
 from tqdm import tqdm
 
 # ---------- Config ----------
-ES_URL = "http://localhost:9200"
+ES_URL = "http://193.95.30.190:9200"
 INDEX_NAME = "html_chunks"
 EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2"
 BATCH_SIZE = 500

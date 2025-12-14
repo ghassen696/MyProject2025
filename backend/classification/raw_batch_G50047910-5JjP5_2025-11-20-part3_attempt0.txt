@@ -1,0 +1,14 @@
+{
+  "date": "2025-11-20-part3",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Created a master thesis presentation using AI-powered tools.",
+  "activities": {
+    "Development / Coding": ["Switched to POWERPPT", "Used shortcut: Switch App", "Pasted content: AI-Powered Employee Activity Monitoring & Task Recommendation System"],
+    "Research / Learning": ["Switched to POWERPPT", "Typed 'profitional'", "Typed 'university'", "Typed 'project'", "Typed 'Huawei'"]
+  },
+  "insights": [
+    "The employee spent a significant amount of time searching for AI-powered presentation tools.",
+    "The employee used a variety of shortcuts to navigate between different applications and presentations.",
+    "The employee's work session was interrupted by multiple instances of typing 'give me full correcr ocode', suggesting a need for more accurate feedback or guidance."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "date": "2025-12-01-part1",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee worked on fixing errors in a load balancer instance and developed a new feature for the project.",
+  "activities": {
+    "Development / Coding": ["worked on thesis presentation on canva", "developed a new feature for the project", "fixed errors in a load balancer instance", "look at this", "n_results"],
+    "Bathroom": ["paused work for 2 minutes"]
+  },
+  "insights": [
+    "The employee focused on coding tasks, with most of their time spent on developing new features and fixing errors.",
+    "There was a noticeable pause in the employee's activity, suggesting they took a short break to use the bathroom.",
+    "The employee used various tools and applications, including Visual Studio Code, Google Chrome, and File Explorer."
+  ]
+}

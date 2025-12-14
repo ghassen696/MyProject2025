@@ -1,0 +1,24 @@
+{
+  "date": "2025-11-25-part21",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Completed development tasks with focus on Huawei SignIn and Task_assistant.tsx files.",
+  "activities": {
+    "Development / Coding": [
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:30:15] Used shortcut: Switch App - [22:30:16] Switched to explorer (Task Switching) - [22:30:28] Switched to chrome (Generative Session , Runway AI - Google Chrome) - [22:30:28] Used shortcut: Switch App - [22:30:28] Switched to explorer (Task Switching) - [22:30:29] Switched to explorer (Downloads - File Explorer) - [22:30:29] Used shortcut: Switch App - [22:30:31] Switched to chrome (Employee activity monitoring keylogger presentation structure - Claude - Google Chrome) - [22:30:36] Used shortcut: Switch App - [22:30:37] Switched to explorer (Task Switching) - [22:32:08] Switched to chrome (Presentation structure review and methodology guidance - Claude - Google Chrome) - [22:32:08] Pasted content: Our architecture follows a five-layer design. First, a Python keylogger captures activity with user . dmins and employees.",
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:33:44] Used shortcut: Switch App - [22:33:45] Pasted content: The keylogger agent, built in Python, captures keystrokes, window switches, and clipboard events in . n testing, it achieved 0.45 events per second with 27-millisecond Kafka latency and zero data loss.",
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:34:04] Used shortcut: Switch App - [22:34:05] Switched to chrome (Generative Session , Runway AI - Google Chrome) - [22:34:05] Used shortcut: Switch App - [22:34:10] Switched to chrome (Proposal - Présentation - Google Chrome) - [22:34:18] Used shortcut: Switch App - [22:34:18] Pasted content: Spark Structured Streaming processes events in 10-second micro-batches, computing real-time KPIs lik . ness with accuracy—batch processing corrects 8 to 12 percent of real-time context-dependent metrics.",
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:34:19] Switched to chrome (Generative Session , Runway AI - Google Chrome) - [22:34:19] Used shortcut: Switch App - [22:34:21] Switched to chrome (Proposal - Présentation - Google Chrome) - [22:34:32] Pasted content: Activity classification uses LLaMA 3.2, an 8-billion parameter model deployed locally via Ollama for . nization.",
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:35:06] Used shortcut: Switch App - [22:35:06] Switched to chrome (Generative Session , Runway AI - Google Chrome) - [22:35:06] Used shortcut: Switch App - [22:35:13] Switched to chrome (Proposal - Présentation - Google Chrome) - [22:35:15] typed: '- (x19)'",
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:35:23] Pasted content: The RAG Assistant answers employee questions by searching Huawei Cloud Stack documentation. We index . n coverage.",
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:35:30] Used shortcut: Switch App - [22:35:30] Switched to chrome (Generative Session , Runway AI - Google Chrome) - [22:35:30] Used shortcut: Switch App - [22:35:36] Switched to chrome (Proposal - Présentation - Google Chrome) - [22:35:56] Pasted content: We conducted comprehensive testing across four dimensions. Performance: The system met all latency t . k clustering.",
+      "Switched to chrome (Proposal - Présentation - Google Chrome) - [22:36:00] Used shortcut: Switch App - [22:36:01] Switched to chrome (Generative Session , Runway AI - Google Chrome) - [22:36:01] Used shortcut: Switch App - [22:36:02] Switched to chrome (Proposal - Présentation - Google Chrome) - [22:36:03] Pasted content: System Actors & Core Requirements",
+      "Switched to chrome (Presentation structure review and methodology guidance - Claude - Google Chrome) - [23:03:28] typed: 'each table his own ilage prompt with liofgos and design that goes with huawei re dd theme'",
+    "Research / Learning" 
+  ],
+  "insights": [
+    "Repeatedly switching between tasks indicates a need for improved workflow organization.",
+    "Efficient task management was demonstrated through focused work on specific files and tools.",
+    "Frequent use of shortcuts suggests high level of familiarity with tools."
+  ]
+} 
+}

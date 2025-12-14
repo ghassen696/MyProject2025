@@ -1,0 +1,28 @@
+{
+  "date": "2025-11-19",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee worked on keylogger.py for 21.7 minutes, focusing on optimizing clipboard handling and window switching.",
+  "activities": {
+    "Development / Coding": [
+      "switched to vs code",
+      "checked output of it",
+      "fixed the code",
+      "Used shortcut: Switch App - [12:25:59] typed: 'periode'",
+      "Used shortcut: Switch App - [12:26:17] Pasted content: import threading import time import uuid from datetime import datetime from pynput import keyboa . logger.log_event(event) (x8)",
+      "Used shortcut: Switch App - [12:27:15] typed: 'is periodicflush low ?'",
+      "Used shortcut: Switch App - [12:28:10] typed: 'how many time should i put in that veriable'",
+      "Used shortcut: Switch App - [12:30:24] typed: '*'",
+      "Switched to Code (● batchkpi.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "Pasted content: from pyspark.sql import SparkSession from pyspark.sql.functions import ( col, from_unixtime,ex . ) print(f\"✅ Employee activity KPI summary for {target_date} is DONE and saved to Elasticsearch!\")",
+      "Switched to Code (● batchkpi.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "Pasted content: summary_df = summary_df .withColumn(\"focus_norm\", least(col(\"focus_ratio\")/6000, lit(1))) \".*0.3) + (x9)(col(\"context_norm\")*0.2) + (x9)(col(\"event_div_norm\")*0.1)) * 100 ",
+      "Switched to Code (realtimekpi2testoriginal.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "Pasted content: from pyspark.sql import SparkSession from pyspark.sql.functions import ( col, from_json, when, . .\") daily_query.stop() spark.stop() logger.info(\"Streams stopped successfully.\")"
+    ]
+  },
+  "insights": [
+    "The employee showed focus on optimizing keylogger.py, indicating a high level of engagement with the task.",
+    "There is redundancy in window switch and event and shortcut switch app, suggesting an opportunity for process improvement.",
+    "The use of alt tab to switch between terminal and vs code indicates a need for better workflow management."
+  ]
+}

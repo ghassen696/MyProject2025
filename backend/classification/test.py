@@ -15,7 +15,7 @@ from preprocessing import fetch_logs_for_employee, prepare_chunks_for_pipeline, 
 from classification import batch_classify_parallel,save_classifications_to_elasticsearch
 from Summarization import summarize_and_store
 # 🧠 Connect to your Elasticsearch instance
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://193.95.30.190:9200")
 
 # 🧩 Parameters for testing
 INDEX = "employee_activity"

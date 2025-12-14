@@ -1,7 +1,9 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json, window, sum, count, avg, collect_set, max as max_
 from pyspark.sql.types import StructType, StructField, StringType, LongType, TimestampType, DoubleType
-
+import time
+from datetime import datetime
+import logging
 # Initialize Spark
 spark = SparkSession.builder \
     .appName("EmployeeActivityToES") \
@@ -60,3 +62,18 @@ raw_query = clean_df.writeStream \
 
 # Wait for both queries
 spark.streams.awaitAnyTermination()
+"""
+try:
+    while True:
+        now = datetime.now()
+        if now.hour >= 23:
+            logger.info("Stopping raw activity job at 18:00")
+            raw_query.stop()
+            spark.stop()
+            break
+        time.sleep(60)  # check every minute
+except KeyboardInterrupt:
+    logger.info("Manual stop detected, stopping streams...")
+    raw_query.stop()
+    spark.stop()
+"""

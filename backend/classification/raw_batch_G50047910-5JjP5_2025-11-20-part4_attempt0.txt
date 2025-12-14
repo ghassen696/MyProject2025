@@ -1,0 +1,15 @@
+{
+  "date": "2025-11-20-part4",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Created a master thesis presentation using AI-powered tools.",
+  "activities": {
+    "Browsing / Distraction": ["(7) Facebook", "Real-time KPI aggregation"],
+    "Development / Coding": ["Code (Rapport.tex - V0Report - Visual Studio Code)", "Pasted content: \\\ndocumentclass[a4paper,12pt]{report} \\\nusepackage[english]{babel} \\\nusepackage[utf8]{inputenc} \\\nuse . graphy{references} \\\nlhead{} %\\\\input{pages/resume} \\\nclearpage \\\nincludepdf{Resume} \\\nend{document}", "Code (Search)"],
+    "Research / Learning": ["Sharing Link Validation", "The 9th Huawei ICT Competition Roadshow Slides.pptx - Google Chrome"]
+  },
+  "insights": [
+    "The employee spent a significant amount of time switching between different applications and presentations.",
+    "The employee used a variety of shortcuts to navigate between different applications and presentations, indicating a need for more efficient workflow.",
+    "The employee's work session was interrupted by multiple instances of typing 'give me full correcr ocode', suggesting a need for more accurate feedback or guidance."
+  ]
+}

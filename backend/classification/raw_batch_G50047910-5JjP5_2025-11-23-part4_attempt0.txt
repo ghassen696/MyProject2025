@@ -1,0 +1,10 @@
+{
+  "date": "2025-11-23-part4",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee worked on summarization pipeline and embedded icons in a presentation.",
+  "activities": {
+    "Development / Coding": ["Switched to Code (taskMatcher_router.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)", "Pasted content: kpi_summary", "Switched to Code (appendices.tex - V0Report - Visual Studio Code)"],
+    "System Maintenance / Troubleshooting": ["Went idle in chrome (Elasticsearch negative score fix - Google Chrome)", "Returned from idle (away 20s)", "Went idle in Code (● taskMatcher_router.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)"]
+  },
+  "insights": ["The employee spent a significant amount of time browsing and searching for icons, suggesting potential distractions.", "The employee worked on multiple projects simultaneously, including a presentation and a summarization pipeline.", "The employee used specific tools such as ChatGPT to troubleshoot issues."]
+}

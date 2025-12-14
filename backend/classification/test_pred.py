@@ -7,7 +7,7 @@ import math
 # -------------------------------
 # Configuration
 # -------------------------------
-ES = Elasticsearch("http://localhost:9200")
+ES = Elasticsearch("http://193.95.30.190:9200")
 EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2"
 embedding_model = SentenceTransformer(EMBEDDING_MODEL)
 

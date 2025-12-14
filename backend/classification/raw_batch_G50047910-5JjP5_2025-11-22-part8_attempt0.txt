@@ -1,0 +1,18 @@
+{
+  "date": "2025-11-22-part8",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Designed a RAG chatbot for Huawei cloud documentation and created logo options using Canva.",
+  "activities": {
+    "Development / Coding": [
+      "Switched to explorer (Downloads - File Explorer)",
+      "Switched to chrome (taskPrediction_router.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "Switched to chrome (batchkpi.py - PFE_Project_LatestV [SSH: 193.95.30.190] - Visual Studio Code)",
+      "Switched to chrome (localhost:9200/employee_classifications/_search?pretty - Google Chrome)"
+    ]
+  },
+  "insights": [
+    "The employee took multiple breaks during the session, indicating potential need for more focused work sessions.",
+    "The employee spent a significant amount of time designing logo options for the RAG chatbot.",
+    "The employee used Canva animation in their pipeline design."
+  ]
+}

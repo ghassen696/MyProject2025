@@ -1,0 +1,113 @@
+\subsection{Classification Performance Evaluation}
+
+This section presents the evaluation of the automated activity classification system against manually labeled ground truth data.
+
+\subsubsection{Dataset Overview}
+
+The evaluation dataset consists of \textbf{50} employee activity chunks spanning \textbf{6} distinct categories. The classification system achieved an overall accuracy of \textbf{78.00\%}.
+
+\subsubsection{Performance Metrics}
+
+Table~\ref{tab:classification_metrics} summarizes the overall performance metrics of the classification system.
+
+\begin{table}[h]
+\centering
+\caption{Overall Classification Performance Metrics}
+\label{tab:classification_metrics}
+\begin{tabular}{lc}
+\hline
+\textbf{Metric} & \textbf{Score} \\
+\hline
+Accuracy & 78.00\% \\
+Precision (Macro) & 0.301 \\
+Recall (Macro) & 0.250 \\
+F1-Score (Macro) & 0.260 \\
+Precision (Weighted) & 0.654 \\
+Recall (Weighted) & 0.706 \\
+F1-Score (Weighted) & 0.706 \\
+Cohen's Kappa & 0.225 \\
+\hline
+\end{tabular}
+\end{table}
+
+The Cohen's Kappa score of \textbf{0.225} indicates fair agreement between the automated classification and ground truth labels.
+
+\subsubsection{Per-Category Performance}
+
+Table~\ref{tab:per_category_metrics} presents the detailed performance metrics for each activity category.
+
+\begin{table}[h]
+\centering
+\caption{Per-Category Classification Metrics}
+\label{tab:per_category_metrics}
+\small
+\begin{tabular}{lcccr}
+\hline
+\textbf{Category} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+\hline
+Browsing / Distraction & 1.000 & 0.500 & 0.667 & 2 \\
+Cloud Operations / DevOps & 0.000 & 0.000 & 0.000 & 1 \\
+Development / Coding & 0.809 & 1.000 & 0.894 & 38 \\
+Idle / Break & 0.000 & 0.000 & 0.000 & 1 \\
+Research / Learning & 0.000 & 0.000 & 0.000 & 3 \\
+System Maintenance / Troubleshooting & 0.000 & 0.000 & 0.000 & 5 \\
+\hline
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:per_class_metrics} visualizes the precision, recall, and F1-score for each category, providing insight into which categories are classified most reliably.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{per_class_metrics.png}
+\caption{Per-Category Performance Metrics}
+\label{fig:per_class_metrics}
+\end{figure}
+
+\subsubsection{Confusion Matrix Analysis}
+
+The confusion matrix in Figure~\ref{fig:confusion_matrix} shows the distribution of predictions across categories. Darker cells along the diagonal indicate correct classifications, while off-diagonal cells represent misclassifications.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{confusion_matrix.png}
+\caption{Normalized Confusion Matrix}
+\label{fig:confusion_matrix}
+\end{figure}
+
+Key observations from the confusion matrix:
+
+\begin{itemize}
+\item \textbf{4} instances (80.0\%) of \textit{System Maintenance / Troubleshooting} were misclassified as \textit{Development / Coding}
+\item \textbf{2} instances (66.7\%) of \textit{Research / Learning} were misclassified as \textit{Development / Coding}
+\item \textbf{1} instances (50.0\%) of \textit{Browsing / Distraction} were misclassified as \textit{Development / Coding}
+\end{itemize}
+
+
+\subsubsection{Confidence Score Analysis}
+
+The classification system assigns a confidence score to each prediction, representing the certainty of the classification. Figure~\ref{fig:confidence_dist} shows the distribution of confidence scores.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{confidence_distribution.png}
+\caption{Confidence Score Distribution and Analysis}
+\label{fig:confidence_dist}
+\end{figure}
+
+The mean confidence score is \textbf{0.954} with a standard deviation of \textbf{0.021}. Confidence scores range from 0.850 to 0.990.
+
+\subsubsection{Category Distribution}
+
+Figure~\ref{fig:category_dist} compares the distribution of categories in the ground truth data versus the predictions, highlighting any systematic biases in the classification system.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{category_distribution.png}
+\caption{Category Distribution: Ground Truth vs Predictions}
+\label{fig:category_dist}
+\end{figure}
+
+\subsubsection{Discussion}
+
+%%DISCUSSION_PLACEHOLDER%%

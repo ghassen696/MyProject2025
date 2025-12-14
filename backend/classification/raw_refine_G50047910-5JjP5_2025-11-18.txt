@@ -1,0 +1,18 @@
+{
+  "date": "2025-11-18",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "The employee successfully deployed and tested a Spark-based data processing pipeline using Docker Compose multiple times throughout the day.",
+  "activities": {
+    "Development / Coding": [
+      "bash_command=f\"/usr/local/spark/bin/spark-submit --packages {SPARK_PACKAGES} {BACKEND_PATH}/spark/Rawbatch.py\"",
+      "docker-compose up -d",
+      "docker-compose down"
+    ],
+    "System Maintenance / Troubleshooting": []
+  },
+  "insights": [
+    "The employee demonstrated efficient use of Docker Compose to manage the deployment and testing of the Spark pipeline.",
+    "The employee spent a significant amount of time reviewing and adjusting the Docker Compose configuration, indicating a need for more efficient workflow management.",
+    "The employee showed focus on detail when configuring the BashOperator with a specific command."
+  ]
+}

@@ -1,21 +1,23 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
+
 from app.users.elastic_queries import es
 from app.auth.auth_utils import verify_password, create_access_token
 
 router = APIRouter()
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 @router.post("/login")
 def login(request: LoginRequest):
-    email = request.email.lower()
-    # Search user by email instead of username
+    email = str(request.email).lower()
+
+    # Search user by email
     res = es.search(
         index="users2",
-        body={"query": {"term": {"email": email}}}
+        body={"query": {"term": {"email.keyword": email}}}
     )
     hits = res.get("hits", {}).get("hits", [])
     if not hits:
@@ -28,7 +30,7 @@ def login(request: LoginRequest):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     token = create_access_token({
-        "email": request.email,
+        "email": str(request.email),
         "role": user_doc.get("role")
     })
 

@@ -163,7 +163,6 @@ export default function Requests() {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-gray-500 mt-2">No activity found for this interval.</p>
                   )}
 
                   {/* Actions */}

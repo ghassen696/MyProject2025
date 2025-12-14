@@ -1,0 +1,15 @@
+{
+  "date": "2025-11-22-part11",
+  "employee_id": "G50047910-5JjP5",
+  "summary": "Designed a RAG chatbot for Huawei cloud documentation and created logo options using Canva.",
+  "activities": {
+    "Development / Coding": ["generated a simple illustration image that explains the employee history vector embedding construction", "build_employee_history.py", "classification.py"],
+    "Research / Learning": ["check her here in my code im i doing something wrong so to builf th . employe history i do take 3make a vector embediing of 30%summary 70%summary and mix them", "generate a simple illustration image that explains this"],
+    "System Maintenance / Troubleshooting": ["check her here in my code im i doing something wrong so to builf th . employe history i do take 3make a vector embediing of 30%summary 70%summary and mix them"]
+  },
+  "insights": [
+    "The employee spent a significant amount of time designing logo options for the RAG chatbot.",
+    "The employee took multiple breaks during the session, indicating potential need for more focused work sessions.",
+    "The employee used Canva animation in their pipeline design."
+  ]
+}
